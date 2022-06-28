@@ -4,12 +4,17 @@ const {
   GraphQLSchema,
   GraphQLID,
   GraphQLInt,
+  GraphQLList,
 } = require("graphql");
 
 const data = [
   { id: 1, name: "Niyozbek", gender: "male", schoolId: 1 },
   { id: 2, name: "Mahmud", gender: "male", schoolId: 2 },
   { id: 3, name: "Bahora", gender: "female", schoolId: 3 },
+  { id: 4, name: "Sardor", gender: "male", schoolId: 2 },
+  { id: 5, name: "Jaloliddin", gender: "female", schoolId: 3 },
+  { id: 6, name: "Masariddin", gender: "male", schoolId: 1 },
+  { id: 7, name: "Mirzohid", gender: "female", schoolId: 1 },
 ];
 
 const schoolData = [
@@ -39,6 +44,12 @@ const SchoolType = new GraphQLObjectType({
     id: { type: GraphQLID },
     schoolName: { type: GraphQLString },
     numberStudents: { type: GraphQLInt },
+    students: {
+      type: new GraphQLList(PersonType),
+      resolve: (parent, args) => {
+        return data.filter((person) => person.schoolId == parent.id);
+      },
+    },
   }),
 });
 
@@ -57,6 +68,18 @@ const Query = new GraphQLObjectType({
       args: { id: { type: GraphQLString } },
       resolve: (parent, args) => {
         return schoolData.find((school) => school.id == args.id);
+      },
+    },
+    schools: {
+      type: new GraphQLList(SchoolType),
+      resolve: (parent, args) => {
+        return schoolData;
+      },
+    },
+    students: {
+      type: new GraphQLList(PersonType),
+      resolve: (parent, args) => {
+        return data;
       },
     },
   },
